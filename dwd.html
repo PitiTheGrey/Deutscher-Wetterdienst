@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Wetterdaten Hamburg vom Deutscher Wetterdienst</title>
+    <meta name="description" content="Wetterdaten Hamburg" />
+    <meta name="author" content="@Piti!" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript">
+
+
+
+$(function() { // wraps around all our code to not pollute global namespace
+
+//////////////////////////////////////////////////////////////////////
+////   Global Variables                              /////////////////
+//////////////////////////////////////////////////////////////////////
+
+"use strict";
+
+var serverURL = ""; 
+var parameters = {};
+var payload = {};
+
+
+//////////////////////////////////////////////////////////////////////
+////   API call								   ///////////////////////
+////   										   ///////////////////////
+//////////////////////////////////////////////////////////////////////
+
+async function doAjax(method, url, parameters, payload) {  // parameters and payload come in as strings
+	$('#outputContent').html('loading ' + url); 
+	if (parameters == "" || parameters == "undefined") {
+	parameters = {};
+	} 
+	if (typeof(parameters) == "string") {
+		//parameters = JSON.parse(parameters);
+	}
+	
+	if (payload == "" || payload == "undefined") {
+		payload = {};
+
+	} 
+	if (typeof(payload) == "string") {
+        console.log(typeof(payload));
+		//payload = JSON.parse(payload);
+	} 
+	console.log("payload: " + payload + JSON.stringify(payload) + typeof(payload)); // stringifying a string causes unwanted backslashes
+	console.log("parameters: " + parameters + JSON.stringify(parameters) + typeof(parameters)); 
+
+	let result;
+	try {
+		result = await $.ajax({
+				url: url,
+				data: parameters,
+				payload: payload, // string
+				type: method,
+				dataType: 'json',
+				contentType: 'application/json',
+				cache: false,
+				success: function(result, status, xhr){
+                        console.log(status);
+                        jsonView.format(JSON.stringify(result), '#outputContent');
+                        return(result);                        
+                    } 
+		});
+	} catch (error) {
+			console.log(error.responseText);
+			}
+}; // end ajax
+
+/////////////////////////////////////////////////
+///////////////// initialize ////////////////////
+///////////////// fields etc. ///////////////////
+/////////////////////////////////////////////////
+
+
+	
+}); // end of global Function
+
+</script>
+<style>
+body {
+	font-family: Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    background-color: #dddddd;
+	color: #000000;
+}
+
+#mainSection {
+	display: table; 
+}
+
+#outputContent {
+	display: table-cell;
+	height: 100%; 
+	width: 100%;
+}
+
+</style>
+
+</head>
+
+<body>
+	<div id="Body">
+		<h1>Deutscher Wetterdienst für Hamburg <span style="font-size: small">(v. 1.0 März 2021) </span>
+		</h1>
+		
+		<div id="mainSection">
+		
+			<div id="outputField">
+				Output field: <br>
+				<li>Display Data: displays information about Api Call</li>
+			</div>
+			<div id="outputContent">
+			</div> 
+		</div> 				
+	</div><!-- end of div id="innerBody" -->
+</body>
+</html>
